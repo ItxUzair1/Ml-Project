@@ -24,7 +24,6 @@ def predict():
         input_data["writing score"] = input_data["writing score"].astype(int)
         input_data["reading score"] = input_data["reading score"].astype(int)
 
-
         # Initialize prediction pipeline
         predict_pipeline = PredictPipeline()
         predict_pipeline.load_model_and_preprocessor()
@@ -34,8 +33,11 @@ def predict():
         logging.info(f"Predictions: {predictions}")
 
         return jsonify({'prediction': predictions[0]})
+    
     except Exception as e:
-        raise CustomException(e) # type: ignore
+        logging.error(f"Error during prediction: {e}")
+        return jsonify({'error': str(e)}), 500
+
 
 if __name__ == '__main__':
     try:

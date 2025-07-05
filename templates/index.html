@@ -167,33 +167,41 @@
     const resultDiv = document.getElementById("result");
 
     form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      resultDiv.textContent = "Predicting...";
+  e.preventDefault();
+  resultDiv.textContent = "Predicting...";
 
-      const formData = new FormData(form);
-      const data = {};
-      formData.forEach((value, key) => {
-        data[key] = value;
-      });
+  const formData = new FormData(form);
+  const data = {};
+  formData.forEach((value, key) => {
+    data[key] = value;
+  });
 
-      try {
-        const response = await fetch("/predict", {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: new URLSearchParams(data),
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || "Prediction failed");
-        }
-
-        const json = await response.json();
-        resultDiv.textContent = `Predicted Math Score: ${json.prediction}`;
-      } catch (error) {
-        resultDiv.textContent = `Error: ${error.message}`;
-      }
+  try {
+    const response = await fetch("/predict", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams(data),
     });
+
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      const json = await response.json();
+      if (json.prediction) {
+        resultDiv.textContent = `Predicted Math Score: ${json.prediction}`;
+      } else if (json.error) {
+        resultDiv.textContent = `Error: ${json.error}`;
+      } else {
+        resultDiv.textContent = "Unexpected response format.";
+      }
+    } else {
+      const text = await response.text();
+      resultDiv.textContent = `Server error: ${text}`;
+    }
+  } catch (error) {
+    resultDiv.textContent = `Network error: ${error.message}`;
+  }
+});
+
   </script>
 </body>
 </html>
