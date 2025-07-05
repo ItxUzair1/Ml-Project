@@ -4,7 +4,7 @@ from src.logger import logging
 from src.exception import CustomException
 from dataclasses import dataclass
 from sklearn.preprocessing import OneHotEncoder,StandardScaler
-from sklearn.compose import ColumnTransformer
+from sklearn.compose import make_column_transformer
 from sklearn.pipeline import Pipeline
 import pandas as pd
 import joblib
@@ -30,13 +30,11 @@ class DataTransformation:
             num_pipeline = Pipeline(steps=[
                 ("scaler", StandardScaler())
             ])
-
-            preprocessor = ColumnTransformer(
-                transformers=[
-                    ("cat", cat_pipeline, categorical_columns),
-                    ("num", num_pipeline, numeric_columns)
-                ]
-            )
+            preprocessor = make_column_transformer(
+                (OneHotEncoder(handle_unknown='ignore'), categorical_columns),
+                (StandardScaler(), numeric_columns),
+                remainder='passthrough'  # Keep other columns as is (safe to use)
+                )
             return preprocessor
 
         except Exception as e:
