@@ -22,7 +22,8 @@ class DataIngestion:
     def initate_data_ingestion(self):
         logging.info("Data Ingestion method starts")
         try:
-            df=pd.read_csv("C:/Users/Sk/Desktop/Ml-Course/Project-1/data/StudentsPerformance.csv")
+            csv_path=os.path.join("data","StudentsPerformance.csv")
+            df=pd.read_csv(csv_path)
             logging.info("Loaded the data into dataframe")
 
             os.makedirs(os.path.dirname(self.ingestion_config.raw_data_path),exist_ok=True)
