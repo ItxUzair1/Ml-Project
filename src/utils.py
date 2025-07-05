@@ -3,6 +3,7 @@ from src.exception import CustomException
 from src.logger import logging
 import sys
 from sklearn.model_selection import RandomizedSearchCV
+import joblib
 
 def evaluate_model(X_train, y_train, X_test, y_test, models: dict,params: dict):
     try:
@@ -43,5 +44,13 @@ def evaluate_model(X_train, y_train, X_test, y_test, models: dict,params: dict):
         return report, best_models
 
 
+    except Exception as e:
+        raise CustomException(e, sys) # type: ignore
+    
+
+def load_model(file_path: str):
+    try:
+        logging.info(f"Loading object from {file_path}")
+        return joblib.load(file_path)
     except Exception as e:
         raise CustomException(e, sys) # type: ignore
