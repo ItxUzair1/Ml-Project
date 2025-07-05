@@ -3,6 +3,7 @@ from src.pipeline.predict_pipeline import PredictPipeline
 from src.exception import CustomException
 from src.logger import logging
 import pandas as pd
+import os
 
 
 app= Flask(__name__)
@@ -38,7 +39,8 @@ def predict():
 
 if __name__ == '__main__':
     try:
-        app.run(debug=True)
+        port = int(os.environ.get("PORT", 5000))
+        app.run(host='0.0.0.0', port=port)
     except Exception as e:
         logging.error(f"Error starting the Flask app: {e}")
         raise CustomException(e) # type: ignore
